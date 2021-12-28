@@ -1,0 +1,387 @@
+
+class MonHoc:
+    def __init__(self, ma, ten, loai, sotinchi, hedaotao):
+        self._ma = ma
+        self._ten = ten
+        self._loai = loai
+        self._sotinchi = sotinchi
+        self._hedaotao = hedaotao
+
+class QuanLyMonHoc:
+    listMonHoc = []
+    def soLuongMonHoc(self):
+        return self.listMonHoc.__len__()
+    
+    def nhapMonHoc(self):
+        ma = input("Nhập mã môn học: ")
+        ten = input("Nhập tên môn học: ")
+        loai = input("Nhập loại môn học: ")
+        sotinchi = int(input("Nhập số tín chỉ: "))
+        hedaotao = input("Nhập hệ đào tạo: ")
+        mh = MonHoc(ma, ten, loai, sotinchi, hedaotao)
+        self.listMonHoc.append(mh)
+
+    # Hàm hiển thị danh sách môn học ra màn hình console
+    def showMonHoc(self, listMH):
+        print("{:<8} {:<12} {:<10} {:<14}{:<14}"
+              .format("Mã", "Tên", "Loại", "Số Tín Chỉ", "Hệ Đào Tạo"))
+        if (listMH.__len__() > 0):
+            for mh in listMH:
+                print("{:<8} {:<12} {:<10} {:<14}{:<14}" 
+                      .format(mh._ma, mh._ten, mh._loai, mh._sotinchi, mh._hedaotao))
+        print("\n")
+
+    # Hàm trả về danh sách môn học hiện tại
+    def getListMonHoc(self):
+        return self.listMonHoc
+
+    # Tìm môn học
+    def findByName(self, keyword):
+        listMH = []
+        if (self.soLuongMonHoc() > 0):
+            for mh in self.listMonHoc:
+                if (keyword.upper() in mh._ten.upper()):
+                    listMH.append(mh)
+        return listMH
+    
+    # Đếm số lượng môn học theo từng loại
+    def demSoLuongMH(self, keyword):
+        dem = 0
+        listMH = []
+        if (self.soLuongMonHoc() > 0):
+            for mh in self.listMonHoc:
+                if (keyword.upper() in mh._loai.upper()):
+                    dem = dem + 1
+        return dem
+
+    # Tổng số tín chỉ các môn học
+    def tong(self):
+        sum = 0
+        listMH = []
+        if (self.soLuongMonHoc() > 0):
+            for mh in self.listMonHoc:
+                    sum += mh._sotinchi
+        return sum
+
+    # Thống kê môn học theo số tín chỉ 
+    #def thongKeMH(self, keyword):
+    #    listMH = []
+    #    if (self.soLuongMonHoc() > 0):
+    #        for mh in self.listMonHoc:
+    #            if (keyword() in mh._sotinchi.upper()):
+    #                listMH.append(mh)
+    #    return listMH
+    def thongKeSL(self, keyword):
+        dem = 0
+        listMH = []
+        if (self.soLuongMonHoc() > 0):
+            for mh in self.listMonHoc:
+                if (keyword == mh._sotinchi):
+                    dem = dem + 1
+        return dem
+
+    # Xóa môn học
+    def delete(self, keyword):
+        isDeleted = False
+        mh = self.findByName(keyword)
+        if (mh != None):
+            if (self.soLuongMonHoc() > 0):
+                for mh in self.listMonHoc:
+                    if (keyword.upper() in mh._ten.upper()):
+                        self.listMonHoc.remove(mh)
+                        isDeleted = True
+        return isDeleted
+
+
+class Nut:
+    def __init__(self, khoa=None):
+        self.khoa = khoa
+        self.trai=None
+        self.phai=None
+        
+    def chen(self, khoa):
+        if self is None:
+            nut = Nut(khoa)
+            self = nut 
+            return
+        
+        if khoa < self.khoa:
+            if self.trai == None:
+                self.trai = Nut(khoa)
+            else:
+                self.trai.chen(khoa)
+        elif khoa > self.khoa:
+            if self.phai == None:
+                self.phai = Nut(khoa)
+            else:
+                self.phai.chen(khoa)
+        else:
+            print(f'Bi trung khoa {khoa}')
+            
+            
+class CayNhiPhanTimKiem:
+    def __init__(self, khoa=None):
+        if khoa == None:
+            self.goc = None
+        else:
+            self.goc = Nut(khoa)
+            
+    def chen(self, khoa):
+        if self.goc == None:
+            self.goc = Nut(khoa)
+        else:
+            self.goc.chen(khoa)
+    
+    def xoa(self, khoa):
+        nut_cha = None
+        nut_con = None
+        nut_ht = self.goc
+        
+        while nut_ht != None:
+            if nut_ht.khoa > khoa:
+                nut_cha = nut_ht
+                nut_ht = nut_ht.trai
+                cha_con = 'trai'
+            elif nut_ht.khoa < khoa:
+                nut_cha = nut_ht
+                nut_ht = nut_ht.phai
+                cha_con = 'phai'
+            else: # tim thay
+                if nut_cha == None:
+                    # xoa nut goc
+                    if nut_ht.trai == None and nut_ht.phai == None:
+                        self.goc = None
+                    elif nut_ht.trai == None:
+                        self.goc = nut_ht.phai
+                    elif nut_ht.phai == None:
+                        self.goc = nut_ht.trai
+                    else:
+                        self.goc = nut_ht.phai
+                        tam = self.goc
+                        while tam.trai != None:
+                            tam = tam.trai 
+                        tam.trai = nut_ht.trai
+                        
+                elif nut_ht.trai == None and nut_ht.phai == None:
+                    if cha_con == 'trai':
+                        nut_cha.trai = None
+                    else:
+                        nut_cha.phai = None
+                elif nut_ht.trai == None:
+                    if cha_con == 'trai':
+                        nut_cha.trai = nut_ht.phai
+                    else:
+                        nut_cha.phai = nut_ht.phai
+                elif nut_ht.phai == None:
+                    if cha_con == 'trai':
+                        nut_cha.trai = nut_ht.trai
+                    else:
+                        nut_cha.phai = nut_ht.trai
+                else:
+                    if cha_con == 'trai':
+                        nut_cha.trai = nut_ht.phai
+                    else:
+                        nut_cha.phai = nut_ht.phai
+                    
+                    if nut_ht.phai.trai == None:
+                        nut_ht.phai.trai = nut_ht.trai
+                    else:
+                        tam = nut_ht.phai
+                        while tam.trai != None:
+                            tam = tam.trai
+                        
+                        tam.trai = nut_ht.trai
+            
+                del nut_ht  
+                break
+                    
+                        
+    def duyet_trai_nut_phai(self, goc=0):
+        # duyet theo LNR
+        nut_ht = goc
+        if goc == 0:
+            nut_ht = self.goc
+        if nut_ht == None:
+            return []
+        else: 
+            kq = []
+            kq_trai = self.duyet_trai_nut_phai(nut_ht.trai)
+            for x in kq_trai:
+                kq.append(x)
+                
+            kq.append(nut_ht.khoa)
+            
+            kq_phai = self.duyet_trai_nut_phai(nut_ht.phai)
+            for x in kq_phai:
+                kq.append(x)
+                
+            return kq
+            
+            
+    def duyet_nut_trai_phai(self, goc=0):
+        # duyet theo NLR
+        nut_ht = goc
+        if goc == 0:
+            nut_ht = self.goc
+        if nut_ht == None:
+            return []
+        else: 
+            kq = []
+            
+            kq.append(nut_ht.khoa)
+            
+            kq_trai = self.duyet_nut_trai_phai(nut_ht.trai)
+            for x in kq_trai:
+                kq.append(x)
+            
+            kq_phai = self.duyet_nut_trai_phai(nut_ht.phai)
+            for x in kq_phai:
+                kq.append(x)
+                
+            return kq
+                    
+            
+    def duyet_trai_phai_nut(self, goc=0):
+        # duyet theo LRN
+        nut_ht = goc
+        if goc == 0:
+            nut_ht = self.goc
+        if nut_ht == None:
+            return []
+        else: 
+            kq = []
+            
+            kq_trai = self.duyet_trai_phai_nut(nut_ht.trai)
+            for x in kq_trai:
+                kq.append(x)
+            
+            kq_phai = self.duyet_trai_phai_nut(nut_ht.phai)
+            for x in kq_phai:
+                kq.append(x)
+                
+            kq.append(nut_ht.khoa)
+            
+            return kq
+                    
+    def tim(self, khoa):
+        if self.goc == None:
+            return
+        
+        nut_ht = self.goc
+        kq = ''
+        while(nut_ht != None and nut_ht.khoa != khoa):
+            kq = kq + f'{nut_ht.khoa} -> '
+            if khoa <= nut_ht.khoa:
+                nut_ht = nut_ht.trai
+            else:
+                nut_ht = nut_ht.phai
+        
+        if nut_ht == None:
+            return None
+        else:
+            kq = kq + f'{nut_ht.khoa}'
+            return kq
+            
+            
+def main():
+    qlmh = QuanLyMonHoc()
+    cay = CayNhiPhanTimKiem()
+    while (1==1):
+            print("\nCHƯƠNG TRÌNH QUẢN LÝ MÔN HỌC")
+            print("*************************MENU***************************")
+            print("**  1.  Nhập môn học từ bàn phím                      **")
+            print("**  2.  Doc/ghi tu file txt                           **")
+            print("**  3.  Xuất các môn học                              **")
+            print("**  4.  Duyệt cây theo 3 cách khác nhau               **")
+            print("**  5.  Xóa 1 môn học X                               **")
+            print("**  6.  Thêm 1 môn hoc X                              **")
+            print("**  7.  Tìm môn học có tên X                          **")
+            print("**  8.  Thống kê môn học theo số tín chỉ              **")
+            print("**  9.  Đếm số lượng môn học theo từng loại           **")
+            print("**  10. Tính tổng số tín chỉ các môn học              **")
+            print("**  0.  Thoat                                         **")
+            print("********************************************************")
+             
+            key = int(input("Nhập tùy chọn: "))
+            if (key == 1):
+                n = int(input("Nhập số môn học: "))
+                print("\n")
+                for i in range(n):
+                    print("Môn học thứ", i+1)
+                    qlmh.nhapMonHoc()
+                    print("\n")
+
+                print("Thêm môn học thành công!")
+
+            elif (key == 2):
+                print("\nError")
+
+            elif (key == 3):
+                if (qlmh.soLuongMonHoc() > 0):
+                    print("Hiển thị danh sách môn học.")
+                    qlmh.showMonHoc(qlmh.getListMonHoc())
+                else:
+                    print("\nDanh sách môn học trống!")
+            
+            elif (key == 4):
+                print("\n")
+            
+            elif (key == 5):
+                if (qlmh.soLuongMonHoc() > 0):
+                    name = input("Nhập môn cần xoá:")
+                    if(qlmh.delete(name)):
+                        print("Môn học ", name, " đã bị xóa")
+                    else:
+                        print("Môn học ", name, " không tồn tại")
+                else:
+                    print("\nDanh sách môn học trống!")
+
+            elif (key == 6):
+                qlmh.nhapMonHoc()
+                print("Thêm môn học thành công!")
+
+            elif (key == 7):
+                if (qlmh.soLuongMonHoc() > 0):
+                    name = input("\nNhập tênn để tìm kiếm: ")
+                    searchResult = qlmh.findByName(name)
+                    qlmh.showMonHoc(searchResult)
+                else:
+                    print("\nDanh sách môn học trống!")
+
+            elif (key == 8): 
+                if (qlmh.soLuongMonHoc() > 0):
+                    name = input("\nNhập số tín chỉ: ")
+                    result = qlmh.thongKeSL(name)
+                    print("\nSố lượng:", result, "môn học\n")
+                    #searchResult = qlmh.thongKeMH(name)
+                    #qlmh.showMonHoc(searchResult)
+                    
+                else:
+                    print("\nDanh sách môn học trống!")
+
+            elif (key == 9):
+                if (qlmh.soLuongMonHoc() > 0):
+                    name = input("\nNhập loại: ")
+                    result = qlmh.demSoLuongMH(name)
+                    print("Số lượng:", result)
+                else:
+                    print("\nDanh sách môn học trống!")
+            
+            elif (key == 10):
+               if (qlmh.soLuongMonHoc() > 0):
+                    result = qlmh.tong()
+                    print("Tổng tín chỉ:", result)
+               else:
+                    print("\nDanh sách môn học trống!")
+
+            elif (key == 0):
+                print("\nBan da chon thoat chuong trinh!")
+                break
+            else:
+                print("\nKhong co chuc nang nay!")
+                print("\nHay chon chuc nang trong hop menu.")   
+     
+                
+       
+if __name__ == '__main__':
+    main()
